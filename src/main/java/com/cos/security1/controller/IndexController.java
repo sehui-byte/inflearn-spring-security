@@ -31,10 +31,10 @@ public class IndexController {
         return "manager";
     }
 
-    @GetMapping("/login")
-    public @ResponseBody String login() {
+    @GetMapping("/loginForm")
+    public @ResponseBody String loginForm() {
         //
-        return "login";
+        return "loginForm";
     }
 
     @GetMapping("/join")
