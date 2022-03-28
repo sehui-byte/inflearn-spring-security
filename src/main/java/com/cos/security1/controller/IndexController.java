@@ -1,11 +1,22 @@
 package com.cos.security1.controller;
 
+import com.cos.security1.model.User;
+import com.cos.security1.model.vo.Role;
+import com.cos.security1.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller // view를 리턴하겠다
 public class IndexController {
+
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @GetMapping({"", "/"})
     public String index() {
@@ -37,16 +48,23 @@ public class IndexController {
         return "loginForm";
     }
 
-    @GetMapping("/join")
-    public @ResponseBody String join() {
+    @PostMapping("/join")
+    public @ResponseBody String join(User user) {
         //
+        System.out.println(user);
+        user.setRole(Role.ROLE_USER);
+
+        //pw가 암호화되어야 security로 로그인 가능
+        String rawPassword = user.getPassword();
+        user.setPassword(bCryptPasswordEncoder.encode(rawPassword));
+        userRepository.save(user);
         return "join";
     }
 
-    @GetMapping("/joinProc")
+    @GetMapping("/joinForm")
     public @ResponseBody String joinProc() {
         //
-        return "회원가입 완료됨!";
+        return "joinForm";
     }
 
 }
