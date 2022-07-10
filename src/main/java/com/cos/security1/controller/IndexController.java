@@ -4,6 +4,8 @@ import com.cos.security1.model.User;
 import com.cos.security1.model.vo.Role;
 import com.cos.security1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,13 +45,13 @@ public class IndexController {
     }
 
     @GetMapping("/loginForm")
-    public @ResponseBody String loginForm() {
+    public String loginForm() {
         //
         return "loginForm";
     }
 
     @PostMapping("/join")
-    public @ResponseBody String join(User user) {
+    public String join(User user) {
         //
         System.out.println(user);
         user.setRole(Role.ROLE_USER);
@@ -58,13 +60,29 @@ public class IndexController {
         String rawPassword = user.getPassword();
         user.setPassword(bCryptPasswordEncoder.encode(rawPassword));
         userRepository.save(user);
-        return "join";
+        return "redirect:/loginForm";
     }
 
     @GetMapping("/joinForm")
-    public @ResponseBody String joinProc() {
+    public String joinProc() {
         //
         return "joinForm";
+    }
+
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/info")
+    public @ResponseBody String info() {
+        //
+        return "개인정보";
+    }
+
+    // 이 data() 메서드가 실행되기 전에 PreAuthorize가 실행된다
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+    // PostAuthorize()도 있음.
+    @GetMapping("/data")
+    public @ResponseBody String data() {
+        //
+        return "데이터정보";
     }
 
 }

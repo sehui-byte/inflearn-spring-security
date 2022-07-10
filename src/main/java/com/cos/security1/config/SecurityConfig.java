@@ -10,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity // spring security filter가 spring filter Chain에 등록이 된다
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true) //secured 어노테이션 활성화 , preAuthorize, postAuthorize 어노테이션 활성화
 public class
 SecurityConfig extends WebSecurityConfigurerAdapter {
     //
@@ -18,6 +18,7 @@ SecurityConfig extends WebSecurityConfigurerAdapter {
     //password 암호화
     @Bean  // 해당 메서드의 리턴되는 object를 IoC에 등록해준다
     public BCryptPasswordEncoder encodePwd() {
+        //
         return new BCryptPasswordEncoder();
     }
 
@@ -35,6 +36,7 @@ SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/loginForm") // 접근권한 없는 곳 접근하면 login페이지로 이동하도록
-        ;
+                .loginProcessingUrl("/login")// login주소가 호출되면 시큐리티가 낚아채서 대신 로그인해줌.
+                .defaultSuccessUrl("/"); //로그인 성공시
     }
 }
